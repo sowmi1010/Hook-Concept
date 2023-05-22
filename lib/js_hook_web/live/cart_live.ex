@@ -4,7 +4,11 @@ defmodule JsHookWeb.CartLive do
   alias JsHook.CartList
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, shopping_list: CartList.shopping_list())
+    socket =
+      socket
+      |> assign(shopping_list: CartList.shopping_list())
+      |> assign(rendered: CartList.shopping_list())
+
     {:ok, socket}
   end
 
@@ -15,39 +19,36 @@ defmodule JsHookWeb.CartLive do
     <div class="justify-center items-center p-4">
       <h1 class="text-4xl font-extrabold text-purple-600 text-center mb-4">Buy Branded Watches</h1>
       <div class="flex gap-2">
-        <button id="filter-all" type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">All</button>
-        <button id="filter-tv" type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Tv</button>
-        <button id="filter-mobile" type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Mobile</button>
-        <button id="filter-watch" type="button" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Watch</button>
-      </div>
-      <div id="product-list" class="grid grid-cols-3 gap-8">
-      <%= for shopping <- @shopping_list do %>
-      <%= render_product_item(%{shopping: shopping}) %>
-    <% end %>
+      <button id="filter-all" type="button" phx-hook="FilterCart" phx-value-type="all" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">All</button>
+      <button id="filter-tv" type="button" phx-hook="FilterCart" phx-value-type="tv" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Tv</button>
+      <button id="filter-mobile" type="button" phx-hook="FilterCart" phx-value-type="mobile" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Mobile</button>
+      <button id="filter-watch" type="button" phx-hook="FilterCart" phx-value-type="watch" class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">Watch</button>
+    </div>
 
+      <div id="product-list" class="grid grid-cols-3 gap-8">
+        <%= for shopping <- @rendered do %>
+          <%= render_product_item(%{shopping: shopping}) %>
+        <% end %>
       </div>
     </div>
     """
   end
 
-  def handle_event("filter", %{"type" => filter_type}, socket) do
-    filtered_list =
-      CartList.shopping_list()
-      |> Enum.filter(fn item -> item.type == filter_type end)
-
-    rendered_filtered_list =
-      for product_item <- filtered_list do
-        render_product_item(product_item)
-      end
-
-    {:noreply,
-     %{
-       socket
-       | shopping_list: filtered_list,
-         replaced: true,
-         rendered: rendered_filtered_list
-     }}
+  def handle_event("filter", %{"type" => "tv"}, socket) do
+    filtered_list = filter_items_by_type(socket.assigns.shopping_list, "Tv")
+    updated_socket = assign(socket, rendered: filtered_list)
+    {:noreply, updated_socket}
   end
+
+  def handle_event("filter", %{"type" => _other}, socket), do: {:noreply, socket}
+
+
+  defp filter_items_by_type(shopping_list, item_type) do
+    Enum.filter(shopping_list, fn item ->
+      item.type == String.capitalize(item_type)
+    end)
+  end
+
 
   defp render_product_item(assigns) do
     shopping = Map.get(assigns, :shopping)

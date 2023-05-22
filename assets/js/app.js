@@ -7,7 +7,7 @@ import topbar from "../vendor/topbar";
 // Define the CartLive hook
 let Hooks = {};
 
-Hooks.CartLive = {
+Hooks.FilterCart = {
     mounted() {
         const filterButtons = document.querySelectorAll('button[id^="filter-"]');
         const productList = document.getElementById('product-list');
@@ -15,7 +15,7 @@ Hooks.CartLive = {
         filterButtons.forEach((button) => {
             button.addEventListener('click', (event) => {
                 const filterType = event.target.id.replace('filter-', '');
-
+                console.log('Filter button clicked:', filterType);
                 this.pushEvent('filter', { type: filterType }, (reply) => {
                     if (reply.replaced) {
                         // Update the product list with the filtered items
@@ -26,8 +26,6 @@ Hooks.CartLive = {
         });
     }
 };
-
-
 
 // Configure the LiveSocket
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
