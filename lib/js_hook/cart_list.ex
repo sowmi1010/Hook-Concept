@@ -14,6 +14,18 @@ defmodule JsHook.CartList do
         type: "Watch"
       },
       %{
+        image: "images/Redmi-10-4.jpg",
+        brand: "Redmi 10",
+        price: "12,000",
+        type: "Mobile"
+      },
+      %{
+        image: "images/cora.webp",
+        brand: "Croma 80cm 32inch HD Ready LED TV",
+        price: "9,000",
+        type: "Tv"
+      },
+      %{
         image: "images/pexels-brett-sayles-1080751.jpg",
         brand: "SmartWatch For Men With Hd Display|",
         price: "1139",
@@ -44,19 +56,13 @@ defmodule JsHook.CartList do
         type: "Watch"
       },
       %{
-        image: "images/samsung.webp",
+        image: "images/galaxy-z-flip4_highlights_kv.webp",
         brand: "Samsung Galaxy Z Flip3 5G",
         price: "20,000",
         type: "Mobile"
       },
       %{
-        image: "images/redmi.webp",
-        brand: "Redmi 10",
-        price: "12,000",
-        type: "Mobile"
-      },
-      %{
-        image: "images/apple.webp",
+        image: "images/iphone-14-pro-model-unselect-gallery-2-202209_GEO_EMEA.jpeg",
         brand: "Apple iPhone 11 Pro",
         price: "35,000",
         type: "Mobile"
@@ -65,12 +71,6 @@ defmodule JsHook.CartList do
         image: "images/sams.webp",
         brand: "Samsung 152 cm (60 inch)",
         price: "11,000",
-        type: "Tv"
-      },
-      %{
-        image: "images/cora.webp",
-        brand: "Croma 80cm 32inch HD Ready LED TV",
-        price: "9,000",
         type: "Tv"
       }
     ]

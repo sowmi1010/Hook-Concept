@@ -15,10 +15,8 @@ Hooks.FilterCart = {
         filterButtons.forEach((button) => {
             button.addEventListener('click', (event) => {
                 const filterType = event.target.id.replace('filter-', '');
-                console.log('Filter button clicked:', filterType);
                 this.pushEvent('filter', { type: filterType }, (reply) => {
                     if (reply.replaced) {
-                        // Update the product list with the filtered items
                         productList.innerHTML = reply.rendered;
                     }
                 });
@@ -27,7 +25,6 @@ Hooks.FilterCart = {
     }
 };
 
-// Configure the LiveSocket
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {
     params: { _csrf_token: csrfToken },
