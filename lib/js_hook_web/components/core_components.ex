@@ -40,6 +40,7 @@ defmodule JsHookWeb.CoreComponents do
   attr :show, :boolean, default: false
   attr :on_cancel, JS, default: %JS{}
   slot :inner_block, required: true
+  slot :title
 
   def modal(assigns) do
     ~H"""
@@ -60,24 +61,28 @@ defmodule JsHookWeb.CoreComponents do
         tabindex="0"
       >
         <div class="flex min-h-full items-center justify-center">
-          <div class="w-full max-w-3xl p-4 sm:p-6 lg:py-8">
+          <div class="w-full lg:max-w-2xl md:max-w-xl max-w-sm p-4 sm:p-6 lg:py-8">
             <.focus_wrap
               id={"#{@id}-container"}
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
+              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-4 shadow-lg ring-1 transition"
             >
-              <div class="absolute top-6 right-5">
+              <div class="flex justify-between">
+                <h1 id={"#{@id}-title"} class="text-xl font-semibold text-purple-600">
+                  <%= render_slot(@title) %>
+                </h1>
                 <button
                   phx-click={JS.exec("data-cancel", to: "##{@id}")}
                   type="button"
-                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                  class="-m-3 flex-none p-3 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <.icon name="hero-x-mark-solid" class="h-6 w-6 text-purple-600" />
                 </button>
               </div>
+
               <div id={"#{@id}-content"}>
                 <%= render_slot(@inner_block) %>
               </div>
@@ -211,8 +216,7 @@ defmodule JsHookWeb.CoreComponents do
     ~H"""
     <button
       type={@type}
-      class=
-        "focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-bold rounded-lg text-sm px-5 py-2.5 mb-2"
+      class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-bold rounded-lg text-sm px-5 py-2.5 mb-2"
       {@rest}
     >
       <%= render_slot(@inner_block) %>

@@ -20,7 +20,14 @@ defmodule JsHookWeb.CartLive do
           <h1 class="md:text-3xl text-2xl font-extrabold text-purple-600 text-center">
             Buy Branded Electronics Items
           </h1>
-          <.icon name="hero-shopping-cart-solid" class="lg:h-8 lg:w-8 w-6 h-6 text-purple-600 mr-4" />
+          <div>
+            <button phx-click={show_modal("shopping-cart-modal")} type="button">
+              <.icon
+                name="hero-shopping-cart-solid"
+                class="lg:h-8 lg:w-8 w-6 h-6 text-purple-600 mr-4"
+              />
+            </button>
+          </div>
         </div>
         <div class="flex gap-2 mb-4">
           <.button id="filter-all" phx-hook="FilterCart">All</.button>
@@ -35,6 +42,33 @@ defmodule JsHookWeb.CartLive do
         <% end %>
       </div>
     </div>
+    <.modal id="shopping-cart-modal" on_cancel={JS.navigate(~p"/shopping")}>
+      <:title>Shopping cart</:title>
+      <ul role="list" class="-my-6 divide-y divide-gray-200 mt-8">
+        <li class="flex py-6">
+          <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-purple-600">
+            <img
+              src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
+              class="h-full w-full object-cover object-center"
+            />
+          </div>
+          <div class="ml-4 flex flex-1 flex-col">
+            <div class="flex justify-between text-base lg:text-lg font-bold ">
+              <h3 class="text-gray-500">Throwback Hip Bag</h3>
+              <p class="ml-4 text-purple-600">$90.00</p>
+            </div>
+            <div class="flex flex-1 items-end justify-between text-sm">
+              <p class="text-gray-500">Qty 1</p>
+              <button class="font-medium text-indigo-600">Remove</button>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="mt-10 flex justify-between border-2 border-purple-600 px-4 py-2 text-base font-medium text-gray-900">
+        <p>Subtotal</p>
+        <p>$262.00</p>
+      </div>
+    </.modal>
     """
   end
 

@@ -7,34 +7,32 @@ import topbar from "../vendor/topbar";
 // Define the CartLive hook
 let Hooks = {};
 
-Hooks.FilterCart = {
-    mounted() {
-        const filterButtons = document.querySelectorAll('button[id^="filter-"]');
-        const productList = document.getElementById('product-list');
+Hooks.CartItems = {
+  mounted() {
+    const btnClose = document.querySelector(".cart-close");
+    const cartContainer = document.querySelector(".shopping-cart-container");
 
-        filterButtons.forEach((button) => {
-            button.addEventListener('click', (event) => {
-                const filterType = event.target.id.replace('filter-', '');
-                this.pushEvent('filter', { type: filterType }, (reply) => {
-                    if (reply.replaced) {
-                        productList.innerHTML = reply.rendered;
-                    }
-                });
-            });
-        });
-    }
+    console.log("btnClose:", btnClose); // Check if the button is correctly selected
+
+    btnClose.addEventListener("click", () => {
+      console.log("Close button clicked"); // Check if the event listener is triggered
+      liveSocket.socket.push({ event: "close_cart", payload: {}, ref: "" });
+    });
+  },
 };
 
-let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+let csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {
-    params: { _csrf_token: csrfToken },
-    hooks: Hooks
+  params: { _csrf_token: csrfToken },
+  hooks: Hooks,
 });
 
 // Show progress bar on live navigation and form submits
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
-window.addEventListener("phx:page-loading-start", _info => topbar.show(300));
-window.addEventListener("phx:page-loading-stop", _info => topbar.hide());
+window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
+window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
 
 // Connect the LiveSocket
 liveSocket.connect();
