@@ -20,11 +20,11 @@ defmodule JsHookWeb.CartLive do
     assigns = Map.put(assigns, :subtotal, subtotal)
 
     ~H"""
-    <div class="justify-center items-center w-full bg-white mx-auto max-w-screen-2xl">
-      <div class="fixed w-full z-10 top-0 bg-purple-100 p-1 max-w-screen-2xl px-2">
+    <div class="justify-center items-center w-full bg-white mx-auto max-w-screen-lg">
+      <div class="fixed w-full z-10 top-0 bg-purple-100 p-1 max-w-screen-lg px-2">
         <div class="flex justify-between w-full mb-4">
           <h1 class="md:text-3xl text-2xl font-extrabold text-purple-600 text-center">
-            Buy nameed Electronics Items
+            Buy Electronics Items
           </h1>
           <div class="relative">
             <button phx-click={show_modal("shopping-cart-modal")} type="button">
@@ -59,15 +59,20 @@ defmodule JsHookWeb.CartLive do
     </div>
     <.modal id="shopping-cart-modal" on_cancel={JS.navigate(~p"/shopping")}>
       <:title>Shopping cart</:title>
-      <ul class="-my-6 divide-y divide-gray-200 mt-8">
-        <div :for={item <- @cart_items}>
-          <.render_cart_item item={item} />
-        </div>
-      </ul>
 
-      <div class="mt-10 flex justify-between border-2 border-purple-600 px-4 py-2 lg:text-base text-sm font-medium text-gray-900">
-        <p>Subtotal</p>
-        <p>$<%= @subtotal %></p>
+      <div class="flex flex-col  h-full">
+        <ul class="-my-6 divide-y divide-gray-200 mt-8 overflow-y-auto flex-1">
+          <div :for={item <- @cart_items}>
+            <.render_cart_item item={item} />
+          </div>
+        </ul>
+
+        <div class="mt-10 border-2 border-purple-600 px-4 py-2 ">
+          <div class="flex justify-between lg:text-base text-sm font-medium text-gray-900 font-serif">
+            <p>Subtotal</p>
+            <p>$<%= @subtotal %></p>
+          </div>
+        </div>
       </div>
     </.modal>
     """
@@ -96,11 +101,19 @@ defmodule JsHookWeb.CartLive do
   end
 
   def handle_event("add_to_cart", %{"name" => name, "price" => price, "image" => image}, socket) do
-    cart_item = %{name: name, price: price, image: image, quantity: 1}
-    new_cart_items = [cart_item | socket.assigns.cart_items]
+    existing_item = Enum.find(socket.assigns.cart_items, fn item -> item.name == name end)
 
-    {:noreply,
-     assign(socket, cart_items: new_cart_items, subtotal: calculate_subtotal(new_cart_items))}
+    case existing_item do
+      nil ->
+        cart_item = %{name: name, price: price, image: image, quantity: 1}
+        new_cart_items = [cart_item | socket.assigns.cart_items]
+
+        {:noreply,
+         assign(socket, cart_items: new_cart_items, subtotal: calculate_subtotal(new_cart_items))}
+
+      _ ->
+        {:noreply, put_flash(socket, :error, "Item is already in the cart!")}
+    end
   end
 
   def handle_event("remove_from_cart", %{"name" => name}, socket) do
@@ -118,14 +131,14 @@ defmodule JsHookWeb.CartLive do
     <div class="wrapper mt-20 h-80 bg-white text-gray-900 antialiased">
       <img
         src={@shopping.image}
-        class="h-72 w-full rounded-lg border object-cover object-center shadow-md"
+        class="h-72 w-full rounded-lg border flex-shrink-0 object-cover object-center shadow-md"
       />
       <div class="relative -mt-16 px-4">
         <div class="flex flex-col items-center justify-center rounded-lg bg-white p-4 shadow-lg">
-          <h4 class="word-break mt-1 w-72 truncate text-center text-lg font-semibold uppercase leading-tight">
+          <h4 class="word-break mt-1 w-56 truncate text-center text-lg font-semibold uppercase leading-tight">
             <%= @shopping.name %>
           </h4>
-          <div class="mt-2 flex w-72 justify-between">
+          <div class="mt-2 flex w-56 justify-between">
             <p class="mt-1 font-bold">$<%= @shopping.price %></p>
             <p class="mt-1 items-center rounded bg-purple-100 px-2 py-1 text-sm font-bold text-purple-800">
               <%= @shopping.type %>
@@ -157,27 +170,20 @@ defmodule JsHookWeb.CartLive do
       <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-600">
         <img src={item.image} class="h-full w-full object-cover object-center" />
       </div>
-      <div class="ml-4 flex flex-1 flex-col">
-        <div class="flex justify-between lg:text-base text-xs font-bold text-gray-800">
-          <h3 class="cart-food-title"><%= item.name %></h3>
-          <p class="ml-4">$<%= item.price %></p>
+      <div class="ml-4 flex flex-1 flex-col font-serif">
+        <div class="flex justify-between lg:text-base text-sm font-bold text-gray-800">
+          <h3 class="cart-food-title uppercase leading-tight"><%= item.name %></h3>
+          <p class="ml-4" data-item-price={item.price}>
+            $<span class="item-price"><%= item.price %></span>
+          </p>
         </div>
-        <div class="flex flex-1 items-end justify-between text-sm">
-          <input
-            type="number"
-            min="1"
-            max="9"
-            step="1"
-            value="1"
-            class="border-2 border-purple-600 p-0 font-bold lg:text-base text-sm text-center"
-          />
+        <div class="flex flex-1 items-end justify-end font-serif">
           <button
             id="cart-remove-button"
             phx-hook="Cart"
             phx-click="remove_from_cart"
             phx-value-name={name}
-            class="font-medium text-indigo-600 lg:text-base text-sm"
-          >
+            class="font-medium text-indigo-600 lg:text-base text-sm">
             Remove
           </button>
         </div>

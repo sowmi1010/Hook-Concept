@@ -70,11 +70,10 @@ Hooks.Cart = {
   updateSubtotal() {
     let cartItems = document.querySelectorAll("li[data-item-name]");
     let subtotal = 0;
+    let subtotalElement = document.getElementById("subtotal");
 
     cartItems.forEach((item) => {
-      let price = parseFloat(
-        item.querySelector("p").innerText.replace("$", "")
-      );
+      let price = parseFloat(item.querySelector(".item-price").innerText);
       let quantity = parseInt(item.querySelector("input[type='number']").value);
       subtotal += price * quantity;
     });
@@ -82,7 +81,6 @@ Hooks.Cart = {
     subtotalElement.innerText = `$${subtotal.toFixed(2)}`;
   },
 };
-
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")

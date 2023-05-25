@@ -15,6 +15,9 @@ module.exports = {
     extend: {
       colors: {
         brand: "#FD4F00",
+      },
+      boxShadow: {
+        '3xl': '0 55px 80px -15px rgba(0, 0, 0, 0.3)',
       }
     },
   },

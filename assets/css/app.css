@@ -2,4 +2,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+.shadow-soft-2xl {
+  --tw-shadow: 0 0.3125rem 0.625rem 0 rgba(0, 0, 0, 0.12);
+  --tw-shadow-colored: 0 0.3125rem 0.625rem 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 /* This file is for your main application CSS */
