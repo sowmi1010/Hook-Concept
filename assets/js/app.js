@@ -58,13 +58,19 @@ Hooks.Cart = {
       });
     });
   },
-
   updated() {
     let itemCount = document.getElementById("item-count");
     let cartItemCount = this.el.dataset.cartItemCount || 0;
 
     itemCount.innerText = cartItemCount;
     this.updateSubtotal();
+
+    let qtyInputs = document.querySelectorAll("input[type='number']");
+    qtyInputs.forEach((input) => {
+      input.addEventListener("input", () => {
+        this.updateSubtotal();
+      });
+    });
   },
 
   updateSubtotal() {

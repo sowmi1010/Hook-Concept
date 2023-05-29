@@ -68,9 +68,9 @@ defmodule JsHookWeb.CartLive do
         </ul>
 
         <div class="mt-10 border-2 border-purple-600 px-4 py-2 ">
-          <div class="flex justify-between lg:text-base text-sm font-medium text-gray-900 font-serif">
+          <div class="flex justify-between lg:text-lg text-sm font-bold text-gray-900 font-serif">
             <p>Subtotal</p>
-            <p>$<%= @subtotal %></p>
+            <p class="text-purple-600" id="subtotal">$<%= @subtotal %></p>
           </div>
         </div>
       </div>
@@ -126,6 +126,11 @@ defmodule JsHookWeb.CartLive do
      assign(socket, cart_items: new_cart_items, subtotal: calculate_subtotal(new_cart_items))}
   end
 
+  def handle_event("update_quantity", %{"key" => "Alt", "name" => name, "value" => value}, socket) do
+    IO.puts("Updating quantity for #{name} to #{value}")
+    {:noreply, socket}
+  end
+
   defp render_product_item(assigns) do
     ~H"""
     <div class="wrapper mt-20 h-80 bg-white text-gray-900 antialiased">
@@ -173,17 +178,30 @@ defmodule JsHookWeb.CartLive do
       <div class="ml-4 flex flex-1 flex-col font-serif">
         <div class="flex justify-between lg:text-base text-sm font-bold text-gray-800">
           <h3 class="cart-food-title uppercase leading-tight"><%= item.name %></h3>
-          <p class="ml-4" data-item-price={item.price}>
+          <p class="ml-4">
             $<span class="item-price"><%= item.price %></span>
           </p>
         </div>
-        <div class="flex flex-1 items-end justify-end font-serif">
+        <div class="flex flex-1 items-end justify-between font-serif">
+          <input
+            type="number"
+            min="1"
+            max="9"
+            step="1"
+            value="1"
+            id="qty-input"
+            phx-hook="Cart"
+            phx-keydown="update_quantity"
+            class="border-2 border-purple-600 p-0 font-bold lg:text-base text-sm text-center"
+          />
+
           <button
             id="cart-remove-button"
             phx-hook="Cart"
             phx-click="remove_from_cart"
             phx-value-name={name}
-            class="font-medium text-indigo-600 lg:text-base text-sm">
+            class="font-medium text-indigo-600 lg:text-base text-sm"
+          >
             Remove
           </button>
         </div>
